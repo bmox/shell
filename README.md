@@ -33,3 +33,32 @@ Note: This section is for stages 2 and beyond.
    `src/main/java/Main.java`.
 1. Commit your changes and run `git push origin master` to submit your solution
    to CodeCrafters. Test output will be streamed to your terminal.
+
+
+---
+
+终端里执行 code 命令无效。
+
+[Visual Studio Code on macOS](https://code.visualstudio.com/docs/setup/mac)
+```shell
+cat << EOF >> ~/.zprofile
+# Add Visual Studio Code (code)
+export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+EOF
+```
+
+
+安装最新版的 JDK
+
+安装 [jenv](https://github.com/jenv/jenv)
+
+```shell
+brew install jenv
+```
+
+看下 README 里的教程了解 `add`、`versions`、`local` 和 `global` 等子命令的使用。
+
+[如何安装 OpenJDK？](https://openjdk.org/install/)
+
+[在哪里下载最新版的 OpenJDK？](https://jdk.java.net/23/)
+
