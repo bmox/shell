@@ -9,6 +9,10 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
 
+            if (Constants.EXIT_COMMAND.equals(input)) {
+                break;
+            }
+
             System.out.println(input + ": " + Constants.NOT_FOUND);
         }
     }
