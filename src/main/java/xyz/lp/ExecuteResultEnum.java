@@ -2,7 +2,8 @@ package xyz.lp;
 
 public enum ExecuteResultEnum {
     SUCCESS(0, null),
-    NOT_FOUND(1, Constants.NOT_FOUND);
+    EXIT(1, null),
+    NOT_FOUND(2, Constants.NOT_FOUND);
 
     private final int code;
     private final String msg;

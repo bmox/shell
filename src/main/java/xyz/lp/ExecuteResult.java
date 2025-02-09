@@ -4,9 +4,9 @@ public class ExecuteResult {
     
     private ExecuteResultEnum executeResultEnum;
 
-    ExecuteResult() {}
+    public ExecuteResult() {}
 
-    ExecuteResult(ExecuteResultEnum executeResultEnum) {
+    public ExecuteResult(ExecuteResultEnum executeResultEnum) {
         this.executeResultEnum = executeResultEnum;
     }
 

@@ -28,7 +28,7 @@ public class Command {
         if (command == null || command.isEmpty()) {
             return ExecuteResult.success();
         }
-        Executor executor = ExecutorFactory.getExecutor(command);
+        Executor executor = ExecutorManager.getExecutor(command);
         if (Objects.isNull(executor)) {
             return new ExecuteResult(ExecuteResultEnum.NOT_FOUND);
         }

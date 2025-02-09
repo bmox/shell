@@ -12,16 +12,14 @@ public class Main {
 
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
-
-            if (Constants.EXIT_COMMAND.equals(input)) {
-                break;
-            }
             
             Command command = parser.parse(input);
             ExecuteResult result = command.execute();
 
             if (ExecuteResultEnum.NOT_FOUND.equals(result.getExecuteResultEnum())) {
                 System.out.println(command.getCommand() + ": " + ExecuteResultEnum.NOT_FOUND.getMsg());
+            } else if (ExecuteResultEnum.EXIT.equals(result.getExecuteResultEnum())) {
+                break;
             }
         }
     }
