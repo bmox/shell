@@ -1,17 +1,17 @@
 package xyz.lp;
 
-public class ExecuteResult {
+public class Result {
     
     private ExecuteResultEnum executeResultEnum;
 
-    public ExecuteResult() {}
+    public Result() {}
 
-    public ExecuteResult(ExecuteResultEnum executeResultEnum) {
+    public Result(ExecuteResultEnum executeResultEnum) {
         this.executeResultEnum = executeResultEnum;
     }
 
-    public static ExecuteResult success() {
-        return new ExecuteResult(ExecuteResultEnum.SUCCESS);
+    public static Result success() {
+        return new Result(ExecuteResultEnum.SUCCESS);
     }
 
     public ExecuteResultEnum getExecuteResultEnum() {

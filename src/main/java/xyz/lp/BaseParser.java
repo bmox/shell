@@ -42,8 +42,8 @@ public class BaseParser implements Parser {
     );
 
     @Override
-    public Command parse(String input) {
-        Command command = new Command();
+    public Input parse(String input) {
+        Input command = new Input();
         
         StringBuilder commandStringBuilder = new StringBuilder();
         StringBuilder argStringBuilder = new StringBuilder();
@@ -59,7 +59,7 @@ public class BaseParser implements Parser {
             }
         }
 
-        command.setCommand(commandStringBuilder.toString());
+        command.setCommandName(commandStringBuilder.toString());
         command.setArg(argStringBuilder.toString());
 
         return command;

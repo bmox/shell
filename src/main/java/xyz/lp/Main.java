@@ -1,5 +1,6 @@
 package xyz.lp;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
@@ -11,14 +12,20 @@ public class Main {
             System.out.print("$ ");
 
             Scanner scanner = new Scanner(System.in);
-            String input = scanner.nextLine();
+            String inputStr = scanner.nextLine();
             
-            Command command = parser.parse(input);
-            ExecuteResult result = command.execute();
+            Input input = parser.parse(inputStr);
+            if (input.getCommandName() == null || input.getCommandName().isEmpty()) {
+                continue;
+            }
+            Command command = CommandManager.getCommand(input);
+            if (Objects.isNull(command)) {
+                System.out.println(input.getCommandName() + ": " + Constants.NOT_FOUND);
+                continue;
+            }
+            Result res = command.execute();
 
-            if (ExecuteResultEnum.NOT_FOUND.equals(result.getExecuteResultEnum())) {
-                System.out.println(command.getCommand() + ": " + ExecuteResultEnum.NOT_FOUND.getMsg());
-            } else if (ExecuteResultEnum.EXIT.equals(result.getExecuteResultEnum())) {
+            if (ExecuteResultEnum.EXIT.equals(res.getExecuteResultEnum())) {
                 break;
             }
         }
