@@ -10,9 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import xyz.lp.builtin.echo.EchoCommand;
-import xyz.lp.builtin.echo.ExitCommand;
-import xyz.lp.builtin.echo.TypeCommand;
+import xyz.lp.builtin.EchoCommand;
+import xyz.lp.builtin.ExitCommand;
+import xyz.lp.builtin.TypeCommand;
+import xyz.lp.executable.ExecutableFileCommand;
 
 public class CommandManager {
     private static Map<String, Function<Input, Command>> builtins = Map.of(
@@ -49,7 +50,11 @@ public class CommandManager {
     public static Command getCommand(Input input) {
         Function<Input, Command> f = builtins.get(input.getCommandName());
         if (Objects.isNull(f)) {
-            return null;
+            if (executableFiles.containsKey(input.getCommandName())) {
+                return new ExecutableFileCommand().init(input);
+            } else {
+                return null;
+            }
         }
         return f.apply(input);
     }

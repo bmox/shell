@@ -26,7 +26,7 @@ public class Input {
 
     @Override
     public String toString() {
-        return "Input [commandName=" + commandName + ", arg=" + arg + "]";
+        return commandName + " " + arg;
     }
 
 }

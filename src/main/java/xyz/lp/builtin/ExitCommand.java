@@ -1,12 +1,14 @@
-package xyz.lp.builtin.echo;
+package xyz.lp.builtin;
 
 import xyz.lp.Input;
 import xyz.lp.Result;
+import xyz.lp.ExecuteResultEnum;
 import xyz.lp.Command;
 
-public class EchoCommand implements Command {
+public class ExitCommand implements Command {
 
     private Input input;
+
     private String[] args;
 
     @Override
@@ -25,20 +27,17 @@ public class EchoCommand implements Command {
             throw new IllegalArgumentException();
         }
         this.input = input;
-        this.args = new String[]{input.getArg()};
+        args = new String[]{input.getArg()};
         return this;
     }
 
     @Override
     public Result execute() {
-        if (getArgs().length != 0) {
-            System.out.println(getArgs()[0]);
-        }
-        return Result.success();
+        return new Result(ExecuteResultEnum.EXIT);
     }
 
     public static String getName() {
-        return "echo";
+        return "exit";
     }
     
 }

@@ -1,4 +1,4 @@
-package xyz.lp.builtin.echo;
+package xyz.lp.builtin;
 
 import java.util.Objects;
 
