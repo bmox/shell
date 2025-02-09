@@ -1,7 +1,5 @@
 package xyz.lp;
 
-import java.util.Objects;
-
 public class Input {
 
     private String commandName;

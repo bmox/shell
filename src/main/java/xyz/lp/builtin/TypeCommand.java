@@ -1,11 +1,9 @@
 package xyz.lp.builtin;
 
-import java.util.Objects;
-
-import xyz.lp.Input;
-import xyz.lp.Result;
 import xyz.lp.Command;
 import xyz.lp.CommandManager;
+import xyz.lp.Input;
+import xyz.lp.Result;
 
 public class TypeCommand implements Command {
 

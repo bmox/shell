@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 import xyz.lp.builtin.EchoCommand;
 import xyz.lp.builtin.ExitCommand;
+import xyz.lp.builtin.PwdCommand;
 import xyz.lp.builtin.TypeCommand;
 import xyz.lp.executable.ExecutableFileCommand;
 
@@ -19,7 +20,8 @@ public class CommandManager {
     private static Map<String, Function<Input, Command>> builtins = Map.of(
         EchoCommand.getName(), (input) -> new EchoCommand().init(input),
         TypeCommand.getName(), (input) -> new TypeCommand().init(input),
-        ExitCommand.getName(), (input) -> new ExitCommand().init(input)
+        ExitCommand.getName(), (input) -> new ExitCommand().init(input),
+        PwdCommand.getName(), (input) -> new PwdCommand().init(input)
     );
 
     private static Map<String, Path> executableFiles = new HashMap<>();

@@ -1,26 +1,19 @@
-package xyz.lp.executable;
+package xyz.lp.builtin;
+
+import java.nio.file.Path;
 
 import xyz.lp.Command;
 import xyz.lp.Input;
 import xyz.lp.Result;
 
-public class ExecutableFileCommand implements Command {
+public class PwdCommand implements Command {
 
     private Input input;
     private String[] args;
 
-    private static final String IFS = "[ |\t|\n]";
-
     @Override
     public Result execute() {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(input.toString().split(IFS));
-            pb.inheritIO();
-            Process p = pb.start();
-            p.waitFor();
-        } catch (Exception e) {
-            // ignore
-        }
+        System.out.println(Path.of("").toAbsolutePath());
         return Result.success();
     }
 
@@ -36,9 +29,17 @@ public class ExecutableFileCommand implements Command {
 
     @Override
     public Command init(Input input) {
+        if (!getName().equals(input.getCommandName())) {
+            throw new IllegalArgumentException();
+        }
         this.input = input;
-        this.args = input.getArg().split(" ");
+        this.args = null;
         return this;
     }
+
+    public static String getName() {
+        return "pwd";
+    }
+    
     
 }
