@@ -1,6 +1,10 @@
+package xyz.lp;
+
 import java.util.Scanner;
 
 public class Main {
+    static Parser parser = new BaseParser();
+
     public static void main(String[] args) throws Exception {
         while (true) {
             // Uncomment this block to pass the first stage
@@ -12,8 +16,13 @@ public class Main {
             if (Constants.EXIT_COMMAND.equals(input)) {
                 break;
             }
+            
+            Command command = parser.parse(input);
+            ExecuteResult result = command.execute();
 
-            System.out.println(input + ": " + Constants.NOT_FOUND);
+            if (ExecuteResultEnum.NOT_FOUND.equals(result.getExecuteResultEnum())) {
+                System.out.println(command.getCommand() + ": " + ExecuteResultEnum.NOT_FOUND.getMsg());
+            }
         }
     }
 }

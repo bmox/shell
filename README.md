@@ -62,3 +62,17 @@ brew install jenv
 
 [在哪里下载最新版的 OpenJDK？](https://jdk.java.net/23/)
 
+
+Command
+
+Parser
+
+Executor
+
+
+```mermaid
+
+
+
+
+```
