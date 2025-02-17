@@ -1,8 +1,8 @@
 package xyz.lp.builtin;
 
+import xyz.lp.Command;
 import xyz.lp.Input;
 import xyz.lp.Result;
-import xyz.lp.Command;
 
 public class EchoCommand implements Command {
 

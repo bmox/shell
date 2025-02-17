@@ -1,6 +1,7 @@
 package xyz.lp.builtin;
 
 import xyz.lp.Command;
+import xyz.lp.Context;
 import xyz.lp.Input;
 import xyz.lp.Result;
 

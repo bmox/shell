@@ -1,9 +1,9 @@
 package xyz.lp.builtin;
 
+import xyz.lp.Command;
+import xyz.lp.ExecuteResultEnum;
 import xyz.lp.Input;
 import xyz.lp.Result;
-import xyz.lp.ExecuteResultEnum;
-import xyz.lp.Command;
 
 public class ExitCommand implements Command {
 
