@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import xyz.lp.builtin.CdCommand;
 import xyz.lp.builtin.EchoCommand;
 import xyz.lp.builtin.ExitCommand;
 import xyz.lp.builtin.PwdCommand;
@@ -21,7 +22,8 @@ public class CommandManager {
         EchoCommand.getName(), (input) -> new EchoCommand().init(input),
         TypeCommand.getName(), (input) -> new TypeCommand().init(input),
         ExitCommand.getName(), (input) -> new ExitCommand().init(input),
-        PwdCommand.getName(), (input) -> new PwdCommand().init(input)
+        PwdCommand.getName(), (input) -> new PwdCommand().init(input),
+        CdCommand.getName(), (input) -> new CdCommand().init(input)
     );
 
     private static Map<String, Path> executableFiles = new HashMap<>();

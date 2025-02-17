@@ -1,23 +1,33 @@
 package xyz.lp.builtin;
 
+import java.io.File;
+
 import xyz.lp.Command;
+import xyz.lp.Context;
 import xyz.lp.Input;
 import xyz.lp.Result;
 
-public class PwdCommand implements Command {
+public class CdCommand implements Command {
 
-    private Input input;
-    private String[] args;
+    Input input;
+    String arg;
 
     @Override
     public Result execute() {
-        System.out.println(Context.getInstance().getCurrentPath());
+        File targetDir = new File(arg);
+        if (!targetDir.exists()) {
+            System.out.println("cd: no such file or directory: " + getArgs()[0]);
+        } else if (!targetDir.isDirectory()) {
+            System.out.println("cd: not a directory: " + getArgs()[0]);
+        } else {
+            Context.getInstance().setCurrentPath(targetDir.getAbsolutePath());
+        }
         return Result.success();
     }
 
     @Override
     public String[] getArgs() {
-        return args;
+        return new String[]{arg};
     }
 
     @Override
@@ -31,13 +41,12 @@ public class PwdCommand implements Command {
             throw new IllegalArgumentException();
         }
         this.input = input;
-        this.args = null;
+        arg = input.getArg();
         return this;
     }
 
     public static String getName() {
-        return "pwd";
+        return "cd";
     }
-    
     
 }

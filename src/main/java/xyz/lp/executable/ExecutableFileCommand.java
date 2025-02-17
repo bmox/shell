@@ -1,6 +1,9 @@
 package xyz.lp.executable;
 
+import java.io.File;
+
 import xyz.lp.Command;
+import xyz.lp.Context;
 import xyz.lp.Input;
 import xyz.lp.Result;
 
@@ -16,6 +19,7 @@ public class ExecutableFileCommand implements Command {
         try {
             ProcessBuilder pb = new ProcessBuilder(input.toString().split(IFS));
             pb.inheritIO();
+            pb.directory(new File(Context.getInstance().getCurrentPath()));
             Process p = pb.start();
             p.waitFor();
         } catch (Exception e) {
