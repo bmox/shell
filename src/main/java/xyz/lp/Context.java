@@ -10,7 +10,11 @@ public class Context {
 
     public static Context getInstance() {
         if (instance == null) {
-            instance = new Context();
+            synchronized (Context.class) {
+                if (instance == null) {
+                    instance = new Context();
+                }
+            }
         }
         return instance;
     }
