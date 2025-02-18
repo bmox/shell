@@ -15,6 +15,10 @@ public class CdCommand implements Command {
 
     @Override
     public Result execute() {
+        if ("~".equals(arg)) {
+            Context.getInstance().setCurrentPath(System.getenv("HOME"));
+            return Result.success();
+        }
         File targetDir = new File("/");
         File inputDir = new File(arg);
         String[] splittedPath;
