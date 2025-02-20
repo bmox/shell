@@ -33,7 +33,7 @@ public class EchoCommand implements Command {
     @Override
     public Result execute() {
         if (!CollUtil.isEmpty(getArgs())) {
-            System.out.println(getArgs().get(0));
+            System.out.println(String.join(" ", getArgs()));
         }
         return Result.success();
     }
