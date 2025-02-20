@@ -1,30 +1,40 @@
 package xyz.lp;
 
+import java.util.List;
+
 public class Input {
 
-    private String commandName;
+    private String rawInput;
 
-    private String arg;
+    private List<String> tokens;
 
     public String getCommandName() {
-        return commandName;
+        return (tokens == null || tokens.isEmpty()) ? "" : tokens.get(0);
     }
 
-    public void setCommandName(String command) {
-        this.commandName = command;
+    public void setRawInput(String rawInput) {
+        this.rawInput = rawInput;
     }
 
-    public String getArg() {
-        return arg;
+    public String getRawInput() {
+        return rawInput;
     }
 
-    public void setArg(String arg) {
-        this.arg = arg;
+    public void setTokens(List<String> tokens) {
+        this.tokens = tokens;
+    }
+
+    public List<String> getTokens() {
+        return this.tokens;
+    }
+
+    public List<String> getArgs() {
+        return (tokens == null || tokens.size() < 2) ? List.of() : tokens.subList(1, tokens.size());
     }
 
     @Override
     public String toString() {
-        return commandName + " " + arg;
+        return String.join(" ", tokens);
     }
 
 }

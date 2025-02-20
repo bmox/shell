@@ -1,6 +1,7 @@
 package xyz.lp.builtin;
 
 import java.io.File;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import xyz.lp.Command;
@@ -11,10 +12,10 @@ import xyz.lp.Result;
 public class CdCommand implements Command {
 
     Input input;
-    String arg;
 
     @Override
     public Result execute() {
+        String arg = input.getArgs().get(0);
         if ("~".equals(arg)) {
             Context.getInstance().setCurrentPath(System.getenv("HOME"));
             return Result.success();
@@ -37,10 +38,10 @@ public class CdCommand implements Command {
                 targetDir = new File(targetDir.getAbsoluteFile() + File.separator + path);
             }
             if (!targetDir.exists()) {
-                System.out.println("cd: no such file or directory: " + getArgs()[0]);
+                System.out.println("cd: no such file or directory: " + arg);
                 return Result.success();
             } else if (!targetDir.isDirectory()) {
-                System.out.println("cd: not a directory: " + getArgs()[0]);
+                System.out.println("cd: not a directory: " + arg);
                 return Result.success();
             }
         }
@@ -49,8 +50,8 @@ public class CdCommand implements Command {
     }
 
     @Override
-    public String[] getArgs() {
-        return new String[]{arg};
+    public List<String> getArgs() {
+        return input.getArgs();
     }
 
     @Override
@@ -64,7 +65,6 @@ public class CdCommand implements Command {
             throw new IllegalArgumentException();
         }
         this.input = input;
-        arg = input.getArg();
         return this;
     }
 

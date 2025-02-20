@@ -1,17 +1,20 @@
 package xyz.lp.builtin;
 
+import java.util.List;
+
 import xyz.lp.Command;
 import xyz.lp.CommandManager;
 import xyz.lp.Input;
 import xyz.lp.Result;
+import xyz.lp.common.CollUtil;
 
 public class TypeCommand implements Command {
 
     private Input input;
 
     @Override
-    public String[] getArgs() {
-        return new String[]{input.getArg()};
+    public List<String> getArgs() {
+        return input.getArgs();
     }
 
     @Override
@@ -30,10 +33,10 @@ public class TypeCommand implements Command {
 
     @Override
     public Result execute() {
-        if (getArgs() == null || getArgs().length == 0) {
+        if (CollUtil.isEmpty(getArgs())) {
             return Result.success();
         }
-        String toTypedCmdName = getArgs()[0];
+        String toTypedCmdName = getArgs().get(0);
         boolean isBuiltin = CommandManager.isBuiltin(toTypedCmdName);
         if (isBuiltin) {
             System.out.println(toTypedCmdName + " is a shell builtin");

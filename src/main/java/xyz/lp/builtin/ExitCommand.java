@@ -1,5 +1,7 @@
 package xyz.lp.builtin;
 
+import java.util.List;
+
 import xyz.lp.Command;
 import xyz.lp.ExecuteResultEnum;
 import xyz.lp.Input;
@@ -9,11 +11,9 @@ public class ExitCommand implements Command {
 
     private Input input;
 
-    private String[] args;
-
     @Override
-    public String[] getArgs() {
-        return args;
+    public List<String> getArgs() {
+        return input.getArgs();
     }
 
     @Override
@@ -27,7 +27,6 @@ public class ExitCommand implements Command {
             throw new IllegalArgumentException();
         }
         this.input = input;
-        args = new String[]{input.getArg()};
         return this;
     }
 

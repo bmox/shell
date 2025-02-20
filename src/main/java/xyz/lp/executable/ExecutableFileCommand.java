@@ -1,6 +1,7 @@
 package xyz.lp.executable;
 
 import java.io.File;
+import java.util.List;
 
 import xyz.lp.Command;
 import xyz.lp.Context;
@@ -10,14 +11,13 @@ import xyz.lp.Result;
 public class ExecutableFileCommand implements Command {
 
     private Input input;
-    private String[] args;
 
     private static final String IFS = "[ |\t|\n]";
 
     @Override
     public Result execute() {
         try {
-            ProcessBuilder pb = new ProcessBuilder(input.toString().split(IFS));
+            ProcessBuilder pb = new ProcessBuilder(input.getTokens());
             pb.inheritIO();
             pb.directory(new File(Context.getInstance().getCurrentPath()));
             Process p = pb.start();
@@ -29,8 +29,8 @@ public class ExecutableFileCommand implements Command {
     }
 
     @Override
-    public String[] getArgs() {
-        return args;
+    public List<String> getArgs() {
+        return input.getArgs();
     }
 
     @Override
@@ -41,7 +41,6 @@ public class ExecutableFileCommand implements Command {
     @Override
     public Command init(Input input) {
         this.input = input;
-        this.args = input.getArg().split(" ");
         return this;
     }
     

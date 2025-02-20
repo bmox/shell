@@ -1,5 +1,7 @@
 package xyz.lp.builtin;
 
+import java.util.List;
+
 import xyz.lp.Command;
 import xyz.lp.Context;
 import xyz.lp.Input;
@@ -8,7 +10,6 @@ import xyz.lp.Result;
 public class PwdCommand implements Command {
 
     private Input input;
-    private String[] args;
 
     @Override
     public Result execute() {
@@ -17,8 +18,8 @@ public class PwdCommand implements Command {
     }
 
     @Override
-    public String[] getArgs() {
-        return args;
+    public List<String> getArgs() {
+        return input.getArgs();
     }
 
     @Override
@@ -32,7 +33,6 @@ public class PwdCommand implements Command {
             throw new IllegalArgumentException();
         }
         this.input = input;
-        this.args = null;
         return this;
     }
 

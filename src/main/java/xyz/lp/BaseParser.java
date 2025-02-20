@@ -1,72 +1,115 @@
 package xyz.lp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class BaseParser implements Parser {
 
     private enum StateEnum {
         START,
-        COMMAND,
-        SEPARATOR,
-        ARG;
+        TOKEN,
+        SINGLE_QUOTE_START,
+        IN_SINGLE_QUOTE,
+        SINGLE_QUOTE_END,
+        TOKEN_END;
     }
     private enum CharTypeEnum {
         WHITESPACE,
-        WORD;
+        NORMAL_CHAR,
+        SIGNAL_QUOTE;
     }
     /**
-     * |           | whitespace | word      |
-     * | --------- | ---------- | --------- |
-     * | START     | START      | COMMAND   |
-     * | COMMAND   | SEPARATOR  | COMMAND   |
-     * | SEPARATOR | SEPARATOR  | ARG       |
-     * | ARG       | ARG        | ARG       |
+     * |                    | WHITESPACE      | NORMAL_CHAR     | SIGNAL_QUOTE       |
+     * | ------------------ | --------------- | --------------- | ------------------ |
+     * | START              | START           | TOKEN           | SINGLE_QUOTE_START |
+     * | TOKEN              | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START |
+     * | SINGLE_QUOTE_START | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   |
+     * | IN_SINGLE_QUOTE    | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   |
+     * | SINGLE_QUOTE_END   | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START |
+     * | TOKEN_END          | START           | TOKEN           | SINGLE_QUOTE_START |
      */
     private static final Map<StateEnum, Map<CharTypeEnum, StateEnum>> table = Map.of(
         StateEnum.START, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.START,
-            CharTypeEnum.WORD, StateEnum.COMMAND
+            CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
         ),
-        StateEnum.COMMAND, Map.of(
-            CharTypeEnum.WHITESPACE, StateEnum.SEPARATOR,
-            CharTypeEnum.WORD, StateEnum.COMMAND
+        StateEnum.TOKEN, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.TOKEN_END,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
         ),
-        StateEnum.SEPARATOR, Map.of(
-            CharTypeEnum.WHITESPACE, StateEnum.SEPARATOR,
-            CharTypeEnum.WORD, StateEnum.ARG
+        StateEnum.SINGLE_QUOTE_START, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.IN_SINGLE_QUOTE,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.IN_SINGLE_QUOTE,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_END
         ),
-        StateEnum.ARG, Map.of(
-            CharTypeEnum.WHITESPACE, StateEnum.ARG,
-            CharTypeEnum.WORD, StateEnum.ARG
+        StateEnum.IN_SINGLE_QUOTE, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.IN_SINGLE_QUOTE,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.IN_SINGLE_QUOTE,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_END
+        ),
+        StateEnum.SINGLE_QUOTE_END, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.TOKEN_END,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
+        ),
+        StateEnum.TOKEN_END, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.START,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
         )
     );
 
     @Override
-    public Input parse(String input) {
-        Input command = new Input();
-        
-        StringBuilder commandStringBuilder = new StringBuilder();
-        StringBuilder argStringBuilder = new StringBuilder();
+    public Input parse(String in) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder tokenBuilder = new StringBuilder();
         StateEnum state = StateEnum.START;
-        for (int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
+        for (int i = 0; i < in.length(); i++) {
+            char ch = in.charAt(i);
             state = table.get(state).get(getCharType(ch));
-            if (StateEnum.COMMAND.equals(state)) {
-                commandStringBuilder.append(ch);
-            }
-            if (StateEnum.ARG.equals(state)) {
-                argStringBuilder.append(ch);
+            switch (state) {
+                case TOKEN:
+                case IN_SINGLE_QUOTE:
+                    tokenBuilder.append(ch);
+                    break;
+                case TOKEN_END:
+                    tokens.add(tokenBuilder.toString());
+                    tokenBuilder = new StringBuilder();
+                default:
+                    break;
             }
         }
 
-        command.setCommandName(commandStringBuilder.toString());
-        command.setArg(argStringBuilder.toString());
+        if (!tokenBuilder.isEmpty()) {
+            switch (state) {
+                case TOKEN:
+                case TOKEN_END:
+                case SINGLE_QUOTE_END:
+                    tokens.add(tokenBuilder.toString());
+                    break;
+                default:
+                    break;
+            }
+        }
 
-        return command;
+        Input input = new Input();
+        input.setRawInput(in);
+        input.setTokens(tokens);
+
+        return input;
     }
 
     private CharTypeEnum getCharType(char ch) {
-        return Character.isWhitespace(ch) ? CharTypeEnum.WHITESPACE : CharTypeEnum.WORD;
+        if (Character.isWhitespace(ch)) {
+            return CharTypeEnum.WHITESPACE;
+        } else if ('\'' == ch) {
+            return CharTypeEnum.SIGNAL_QUOTE;
+        } else {
+            return CharTypeEnum.NORMAL_CHAR;
+        }
     }
   
 }

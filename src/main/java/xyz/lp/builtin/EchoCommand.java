@@ -1,17 +1,19 @@
 package xyz.lp.builtin;
 
+import java.util.List;
+
 import xyz.lp.Command;
 import xyz.lp.Input;
 import xyz.lp.Result;
+import xyz.lp.common.CollUtil;
 
 public class EchoCommand implements Command {
 
     private Input input;
-    private String[] args;
 
     @Override
-    public String[] getArgs() {
-        return args;
+    public List<String> getArgs() {
+        return input.getArgs();
     }
 
     @Override
@@ -25,14 +27,13 @@ public class EchoCommand implements Command {
             throw new IllegalArgumentException();
         }
         this.input = input;
-        this.args = new String[]{input.getArg()};
         return this;
     }
 
     @Override
     public Result execute() {
-        if (getArgs().length != 0) {
-            System.out.println(getArgs()[0]);
+        if (!CollUtil.isEmpty(getArgs())) {
+            System.out.println(getArgs().get(0));
         }
         return Result.success();
     }
