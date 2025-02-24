@@ -12,53 +12,84 @@ public class BaseParser implements Parser {
         SINGLE_QUOTE_START,
         IN_SINGLE_QUOTE,
         SINGLE_QUOTE_END,
+        DOUBLE_QUOTE_START,
+        IN_DOUBLE_QUOTE,
+        DOUBLE_QUOTE_END,
         TOKEN_END;
     }
     private enum CharTypeEnum {
         WHITESPACE,
         NORMAL_CHAR,
-        SIGNAL_QUOTE;
+        SIGNAL_QUOTE,
+        DOUBLE_QUOTE;
     }
     /**
-     * |                    | WHITESPACE      | NORMAL_CHAR     | SIGNAL_QUOTE       |
-     * | ------------------ | --------------- | --------------- | ------------------ |
-     * | START              | START           | TOKEN           | SINGLE_QUOTE_START |
-     * | TOKEN              | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START |
-     * | SINGLE_QUOTE_START | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   |
-     * | IN_SINGLE_QUOTE    | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   |
-     * | SINGLE_QUOTE_END   | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START |
-     * | TOKEN_END          | START           | TOKEN           | SINGLE_QUOTE_START |
+     * |                    | WHITESPACE      | NORMAL_CHAR     | SIGNAL_QUOTE       | DOUBLE_QUOTE       |
+     * | ------------------ | --------------- | --------------- | ------------------ | ------------------ |
+     * | START              | START           | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START |
+     * | TOKEN              | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START |
+     * | SINGLE_QUOTE_START | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   | IN_SINGLE_QUOTE    |
+     * | IN_SINGLE_QUOTE    | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   | IN_SINGLE_QUOTE    |
+     * | SINGLE_QUOTE_END   | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START |
+     * | DOUBLE_QUOTE_START | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE    | DOUBLE_QUOTE_END   |
+     * | IN_DOUBLE_QUOTE    | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE    | DOUBLE_QUOTE_END   |
+     * | DOUBLE_QUOTE_END   | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START |
+     * | TOKEN_END          | START           | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START |
      */
     private static final Map<StateEnum, Map<CharTypeEnum, StateEnum>> table = Map.of(
         StateEnum.START, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.START,
             CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
-            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_START
         ),
         StateEnum.TOKEN, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.TOKEN_END,
             CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
-            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_START
         ),
         StateEnum.SINGLE_QUOTE_START, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.IN_SINGLE_QUOTE,
             CharTypeEnum.NORMAL_CHAR, StateEnum.IN_SINGLE_QUOTE,
-            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_END
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_END,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.IN_SINGLE_QUOTE
         ),
         StateEnum.IN_SINGLE_QUOTE, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.IN_SINGLE_QUOTE,
             CharTypeEnum.NORMAL_CHAR, StateEnum.IN_SINGLE_QUOTE,
-            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_END
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_END,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.IN_SINGLE_QUOTE
         ),
         StateEnum.SINGLE_QUOTE_END, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.TOKEN_END,
             CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
-            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_START
+        ),
+        StateEnum.DOUBLE_QUOTE_START, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_END
+        ),
+        StateEnum.IN_DOUBLE_QUOTE, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_END
+        ),
+        StateEnum.DOUBLE_QUOTE_END, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.TOKEN_END,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_START
         ),
         StateEnum.TOKEN_END, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.START,
             CharTypeEnum.NORMAL_CHAR, StateEnum.TOKEN,
-            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_START
         )
     );
 
@@ -73,6 +104,7 @@ public class BaseParser implements Parser {
             switch (state) {
                 case TOKEN:
                 case IN_SINGLE_QUOTE:
+                case IN_DOUBLE_QUOTE:
                     tokenBuilder.append(ch);
                     break;
                 case TOKEN_END:
@@ -88,6 +120,7 @@ public class BaseParser implements Parser {
                 case TOKEN:
                 case TOKEN_END:
                 case SINGLE_QUOTE_END:
+                case DOUBLE_QUOTE_END:
                     tokens.add(tokenBuilder.toString());
                     break;
                 default:
@@ -107,6 +140,8 @@ public class BaseParser implements Parser {
             return CharTypeEnum.WHITESPACE;
         } else if ('\'' == ch) {
             return CharTypeEnum.SIGNAL_QUOTE;
+        } else if ('\"' == ch) {
+            return CharTypeEnum.DOUBLE_QUOTE;
         } else {
             return CharTypeEnum.NORMAL_CHAR;
         }
