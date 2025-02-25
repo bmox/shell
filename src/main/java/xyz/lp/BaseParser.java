@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class BaseParser implements Parser {
 
-    private Set<Character> DOUBLE_QUOTE_SPECIAL_CHAR_SET = Set.of('n', '\\', '$', '"');
+    private Set<Character> DOUBLE_QUOTE_SPECIAL_CHAR_SET = Set.of('\n', '\\', '$', '"');
 
     private enum StateEnum {
         START,
