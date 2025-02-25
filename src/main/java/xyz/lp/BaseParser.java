@@ -18,6 +18,8 @@ public class BaseParser implements Parser {
         DOUBLE_QUOTE_END,
         BACKSLASH,
         BACKSLASH_CHAR,
+        BACKSLASH_IN_DOUBLE_QUOTE,
+        BACKSLASH_CHAR_IN_DOUBLE_QUOTE,
         TOKEN_END;
     }
     private enum CharTypeEnum {
@@ -28,19 +30,21 @@ public class BaseParser implements Parser {
         BACKSLASH;
     }
     /**
-     * |                    | WHITESPACE      | NORMAL_CHAR     | SIGNAL_QUOTE       | DOUBLE_QUOTE       | BACKSLASH       |
-     * | ------------------ | --------------- | --------------- | ------------------ | ------------------ | --------------- |
-     * | START              | START           | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START | BACKSLASH       |
-     * | TOKEN              | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START | BACKSLASH       |
-     * | SINGLE_QUOTE_START | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   | IN_SINGLE_QUOTE    | IN_SINGLE_QUOTE |
-     * | IN_SINGLE_QUOTE    | IN_SINGLE_QUOTE | IN_SINGLE_QUOTE | SINGLE_QUOTE_END   | IN_SINGLE_QUOTE    | IN_SINGLE_QUOTE |
-     * | SINGLE_QUOTE_END   | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START | BACKSLASH       |
-     * | DOUBLE_QUOTE_START | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE    | DOUBLE_QUOTE_END   | IN_DOUBLE_QUOTE |
-     * | IN_DOUBLE_QUOTE    | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE    | DOUBLE_QUOTE_END   | IN_DOUBLE_QUOTE |
-     * | DOUBLE_QUOTE_END   | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START | BACKSLASH       |
-     * | BACKSLASH          | BACKSLASH_CHAR  | BACKSLASH_CHAR  | BACKSLASH_CHAR     | BACKSLASH_CHAR     | BACKSLASH_CHAR  |
-     * | BACKSLASH_CHAR     | TOKEN_END       | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START | BACKSLASH       |
-     * | TOKEN_END          | START           | TOKEN           | SINGLE_QUOTE_START | DOUBLE_QUOTE_START | BACKSLASH       |
+     * |                                | WHITESPACE                     | NORMAL_CHAR                    | SIGNAL_QUOTE                   | DOUBLE_QUOTE                   | BACKSLASH                      |
+     * | ------------------------------ | ------------------------------ | ------------------------------ | ------------------------------ | ------------------------------ | ------------------------------ |
+     * | START                          | START                          | TOKEN                          | SINGLE_QUOTE_START             | DOUBLE_QUOTE_START             | BACKSLASH                      |
+     * | TOKEN                          | TOKEN_END                      | TOKEN                          | SINGLE_QUOTE_START             | DOUBLE_QUOTE_START             | BACKSLASH                      |
+     * | SINGLE_QUOTE_START             | IN_SINGLE_QUOTE                | IN_SINGLE_QUOTE                | SINGLE_QUOTE_END               | IN_SINGLE_QUOTE                | IN_SINGLE_QUOTE                |
+     * | IN_SINGLE_QUOTE                | IN_SINGLE_QUOTE                | IN_SINGLE_QUOTE                | SINGLE_QUOTE_END               | IN_SINGLE_QUOTE                | IN_SINGLE_QUOTE                |
+     * | SINGLE_QUOTE_END               | TOKEN_END                      | TOKEN                          | SINGLE_QUOTE_START             | DOUBLE_QUOTE_START             | BACKSLASH                      |
+     * | DOUBLE_QUOTE_START             | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | DOUBLE_QUOTE_END               | BACKSLASH_IN_DOUBLE_QUOTE      |
+     * | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | DOUBLE_QUOTE_END               | BACKSLASH_IN_DOUBLE_QUOTE      |
+     * | DOUBLE_QUOTE_END               | TOKEN_END                      | TOKEN                          | SINGLE_QUOTE_START             | DOUBLE_QUOTE_START             | BACKSLASH                      |
+     * | BACKSLASH                      | BACKSLASH_CHAR                 | BACKSLASH_CHAR                 | BACKSLASH_CHAR                 | BACKSLASH_CHAR                 | BACKSLASH_CHAR                 |
+     * | BACKSLASH_CHAR                 | TOKEN_END                      | TOKEN                          | SINGLE_QUOTE_START             | DOUBLE_QUOTE_START             | BACKSLASH                      |
+     * | BACKSLASH_IN_DOUBLE_QUOTE      | BACKSLASH_CHAR_IN_DOUBLE_QUOTE | BACKSLASH_CHAR_IN_DOUBLE_QUOTE | BACKSLASH_CHAR_IN_DOUBLE_QUOTE | BACKSLASH_CHAR_IN_DOUBLE_QUOTE | BACKSLASH_CHAR_IN_DOUBLE_QUOTE |
+     * | BACKSLASH_CHAR_IN_DOUBLE_QUOTE | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | IN_DOUBLE_QUOTE                | DOUBLE_QUOTE_END               | BACKSLASH_IN_DOUBLE_QUOTE      |
+     * | TOKEN_END                      | START                          | TOKEN                          | SINGLE_QUOTE_START             | DOUBLE_QUOTE_START             | BACKSLASH                      |
      */
     private static Map<StateEnum, Map<CharTypeEnum, StateEnum>> table = new HashMap<>();
     static {
@@ -84,14 +88,14 @@ public class BaseParser implements Parser {
             CharTypeEnum.NORMAL_CHAR, StateEnum.IN_DOUBLE_QUOTE,
             CharTypeEnum.SIGNAL_QUOTE, StateEnum.IN_DOUBLE_QUOTE,
             CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_END,
-            CharTypeEnum.BACKSLASH, StateEnum.IN_DOUBLE_QUOTE
+            CharTypeEnum.BACKSLASH, StateEnum.BACKSLASH_IN_DOUBLE_QUOTE
         ));
         table.put(StateEnum.IN_DOUBLE_QUOTE, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.IN_DOUBLE_QUOTE,
             CharTypeEnum.NORMAL_CHAR, StateEnum.IN_DOUBLE_QUOTE,
             CharTypeEnum.SIGNAL_QUOTE, StateEnum.IN_DOUBLE_QUOTE,
             CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_END,
-            CharTypeEnum.BACKSLASH, StateEnum.IN_DOUBLE_QUOTE
+            CharTypeEnum.BACKSLASH, StateEnum.BACKSLASH_IN_DOUBLE_QUOTE
         ));
         table.put(StateEnum.DOUBLE_QUOTE_END, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.TOKEN_END,
@@ -113,6 +117,20 @@ public class BaseParser implements Parser {
             CharTypeEnum.SIGNAL_QUOTE, StateEnum.SINGLE_QUOTE_START,
             CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_START,
             CharTypeEnum.BACKSLASH, StateEnum.BACKSLASH
+        ));
+        table.put(StateEnum.BACKSLASH_IN_DOUBLE_QUOTE, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.BACKSLASH_CHAR_IN_DOUBLE_QUOTE,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.BACKSLASH_CHAR_IN_DOUBLE_QUOTE,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.BACKSLASH_CHAR_IN_DOUBLE_QUOTE,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.BACKSLASH_CHAR_IN_DOUBLE_QUOTE,
+            CharTypeEnum.BACKSLASH, StateEnum.BACKSLASH_CHAR_IN_DOUBLE_QUOTE
+        ));
+        table.put(StateEnum.BACKSLASH_CHAR_IN_DOUBLE_QUOTE, Map.of(
+            CharTypeEnum.WHITESPACE, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.NORMAL_CHAR, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.SIGNAL_QUOTE, StateEnum.IN_DOUBLE_QUOTE,
+            CharTypeEnum.DOUBLE_QUOTE, StateEnum.DOUBLE_QUOTE_END,
+            CharTypeEnum.BACKSLASH, StateEnum.BACKSLASH_IN_DOUBLE_QUOTE
         ));
         table.put(StateEnum.TOKEN_END, Map.of(
             CharTypeEnum.WHITESPACE, StateEnum.START,
@@ -136,6 +154,7 @@ public class BaseParser implements Parser {
                 case IN_SINGLE_QUOTE:
                 case IN_DOUBLE_QUOTE:
                 case BACKSLASH_CHAR:
+                case BACKSLASH_CHAR_IN_DOUBLE_QUOTE:
                     tokenBuilder.append(ch);
                     break;
                 case TOKEN_END:
