@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BaseParser implements Parser {
+
+    private Set<Character> DOUBLE_QUOTE_SPECIAL_CHAR_SET = Set.of('n', '\\', '$', '"');
 
     private enum StateEnum {
         START,
@@ -154,7 +157,12 @@ public class BaseParser implements Parser {
                 case IN_SINGLE_QUOTE:
                 case IN_DOUBLE_QUOTE:
                 case BACKSLASH_CHAR:
+                    tokenBuilder.append(ch);
+                    break;
                 case BACKSLASH_CHAR_IN_DOUBLE_QUOTE:
+                    if (!DOUBLE_QUOTE_SPECIAL_CHAR_SET.contains(ch)) {
+                        tokenBuilder.append('\\');
+                    }
                     tokenBuilder.append(ch);
                     break;
                 case TOKEN_END:
