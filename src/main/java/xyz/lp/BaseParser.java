@@ -198,6 +198,8 @@ public class BaseParser implements Parser {
 
         tryRedirectStdout(tokens);
         tryRedirectStderr(tokens);
+        tryAppendStdout(tokens);
+        tryAppendStderr(tokens);
 
         return input;
     }
@@ -221,9 +223,9 @@ public class BaseParser implements Parser {
         while (it.hasNext()) {
             String token = it.next();
             String path = null;
-            if (token.startsWith(">")) {
+            if (token.startsWith(">") && !token.startsWith(">>")) {
                 path = token.substring(">".length());
-            } else if (token.startsWith("1>")) {
+            } else if (token.startsWith("1>") && !token.startsWith("1>>")) {
                 path = token.substring("1>".length());
             }
             if (path == null) {
@@ -242,12 +244,38 @@ public class BaseParser implements Parser {
         }
     }
 
+    private void tryAppendStdout(List<String> tokens) {
+        Iterator<String> it = tokens.iterator();
+        while (it.hasNext()) {
+            String token = it.next();
+            String path = null;
+            if (token.startsWith(">>")) {
+                path = token.substring(">>".length());
+            } else if (token.startsWith("1>>")) {
+                path = token.substring("1>>".length());
+            }
+            if (path == null) {
+                continue ;
+            }
+            it.remove();
+            if (!path.isBlank()) {
+                Context.getInstance().setAppendStdoutFile(getRedirectFile(path));
+                break ;
+            } else if (it.hasNext()) {
+                path = it.next();
+                Context.getInstance().setAppendStdoutFile(getRedirectFile(path));
+                it.remove();
+                break ;   
+            }
+        }
+    }
+
     private void tryRedirectStderr(List<String> tokens) {
         Iterator<String> it = tokens.iterator();
         while (it.hasNext()) {
             String token = it.next();
             String path = null;
-            if (token.startsWith("2>")) {
+            if (token.startsWith("2>") && !token.startsWith("2>>")) {
                 path = token.substring("2>".length());
             }
             if (path == null) {
@@ -260,6 +288,30 @@ public class BaseParser implements Parser {
             } else if (it.hasNext()) {
                 path = it.next();
                 Context.getInstance().setRedirectStderrFile(getRedirectFile(path));
+                it.remove();
+                break ;
+            }
+        }
+    }
+
+    private void tryAppendStderr(List<String> tokens) {
+        Iterator<String> it = tokens.iterator();
+        while (it.hasNext()) {
+            String token = it.next();
+            String path = null;
+            if (token.startsWith("2>>")) {
+                path = token.substring("2>>".length());
+            }
+            if (path == null) {
+                continue ;
+            }
+            it.remove();
+            if (!path.isBlank()) {
+                Context.getInstance().setAppendStderrFile(getRedirectFile(path));
+                break ;
+            } else if (it.hasNext()) {
+                path = it.next();
+                Context.getInstance().setAppendStderrFile(getRedirectFile(path));
                 it.remove();
                 break ;
             }

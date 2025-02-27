@@ -25,6 +25,12 @@ public class ExecutableFileCommand implements Command {
             if (Context.getInstance().getRedirectStderrFile() != null) {
                 pb.redirectError(Context.getInstance().getRedirectStderrFile());
             }
+            if (Context.getInstance().getAppendStdoutFile() != null) {
+                pb.redirectOutput(ProcessBuilder.Redirect.appendTo(Context.getInstance().getAppendStdoutFile()));
+            }
+            if (Context.getInstance().getAppendStderrFile() != null) {
+                pb.redirectError(ProcessBuilder.Redirect.appendTo(Context.getInstance().getAppendStderrFile()));
+            }
             pb.directory(new File(Context.getInstance().getCurrentPath()));
             Process p = pb.start();
             p.waitFor();
