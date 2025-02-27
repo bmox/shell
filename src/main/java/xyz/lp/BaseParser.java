@@ -1,7 +1,12 @@
 package xyz.lp;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -191,6 +196,8 @@ public class BaseParser implements Parser {
         input.setRawInput(in);
         input.setTokens(tokens);
 
+        tryRedirectStdout(tokens);
+
         return input;
     }
 
@@ -206,6 +213,58 @@ public class BaseParser implements Parser {
         } else {
             return CharTypeEnum.NORMAL_CHAR;
         }
+    }
+
+    private void tryRedirectStdout(List<String> tokens) {
+        Iterator<String> it = tokens.iterator();
+        while (it.hasNext()) {
+            String token = it.next();
+            String path = null;
+            if (token.startsWith(">")) {
+                path = token.substring(">".length());
+            } else if (token.startsWith("1>")) {
+                path = token.substring("1>".length());
+            }
+            if (path == null) {
+                continue ;
+            }
+            it.remove();
+            if (!path.isBlank()) {
+                Context.getInstance().setRedirectOutputFile(getRedirectFile(path));
+                break ;
+            } else if (it.hasNext()) {
+                path = it.next();
+                Context.getInstance().setRedirectOutputFile(getRedirectFile(path));
+                it.remove();
+                break ;   
+            }
+        }
+    }
+
+    // private PrintStream getRedirectPrintStream(String path) {
+    //     File redirectFile = getRedirectFile(path);
+    //     try {
+    //         return new PrintStream(redirectFile);
+    //     } catch (FileNotFoundException e) {
+    //         // ignore
+    //     }
+    //     return System.out;
+    // }
+
+    private File getRedirectFile(String path) {
+        File redirectFile = new File(path);
+        if (!redirectFile.isAbsolute()) {
+            redirectFile = new File(Context.getInstance().getCurrentPath() + File.pathSeparator + path);
+        }
+        if (!redirectFile.exists()) {
+            try {
+                Files.createDirectories(Paths.get(redirectFile.getParent()));
+                redirectFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return redirectFile;
     }
   
 }

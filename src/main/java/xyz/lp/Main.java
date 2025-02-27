@@ -28,6 +28,8 @@ public class Main {
             if (ExecuteResultEnum.EXIT.equals(res.getExecuteResultEnum())) {
                 break;
             }
+
+            Context.getInstance().clear();
         }
     }
 }

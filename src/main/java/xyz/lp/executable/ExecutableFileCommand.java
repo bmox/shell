@@ -19,6 +19,9 @@ public class ExecutableFileCommand implements Command {
         try {
             ProcessBuilder pb = new ProcessBuilder(input.getTokens());
             pb.inheritIO();
+            if (Context.getInstance().getRedirectOutputFile() != null) {
+                pb.redirectOutput(Context.getInstance().getRedirectOutputFile());
+            }
             pb.directory(new File(Context.getInstance().getCurrentPath()));
             Process p = pb.start();
             p.waitFor();
