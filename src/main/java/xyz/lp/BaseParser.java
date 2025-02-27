@@ -197,6 +197,7 @@ public class BaseParser implements Parser {
         input.setTokens(tokens);
 
         tryRedirectStdout(tokens);
+        tryRedirectStderr(tokens);
 
         return input;
     }
@@ -230,13 +231,37 @@ public class BaseParser implements Parser {
             }
             it.remove();
             if (!path.isBlank()) {
-                Context.getInstance().setRedirectOutputFile(getRedirectFile(path));
+                Context.getInstance().setRedirectStdoutFile(getRedirectFile(path));
                 break ;
             } else if (it.hasNext()) {
                 path = it.next();
-                Context.getInstance().setRedirectOutputFile(getRedirectFile(path));
+                Context.getInstance().setRedirectStdoutFile(getRedirectFile(path));
                 it.remove();
                 break ;   
+            }
+        }
+    }
+
+    private void tryRedirectStderr(List<String> tokens) {
+        Iterator<String> it = tokens.iterator();
+        while (it.hasNext()) {
+            String token = it.next();
+            String path = null;
+            if (token.startsWith("2>")) {
+                path = token.substring("2>".length());
+            }
+            if (path == null) {
+                continue ;
+            }
+            it.remove();
+            if (!path.isBlank()) {
+                Context.getInstance().setRedirectStderrFile(getRedirectFile(path));
+                break ;
+            } else if (it.hasNext()) {
+                path = it.next();
+                Context.getInstance().setRedirectStderrFile(getRedirectFile(path));
+                it.remove();
+                break ;
             }
         }
     }

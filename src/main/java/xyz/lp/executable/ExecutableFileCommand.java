@@ -19,8 +19,11 @@ public class ExecutableFileCommand implements Command {
         try {
             ProcessBuilder pb = new ProcessBuilder(input.getTokens());
             pb.inheritIO();
-            if (Context.getInstance().getRedirectOutputFile() != null) {
-                pb.redirectOutput(Context.getInstance().getRedirectOutputFile());
+            if (Context.getInstance().getRedirectStdoutFile() != null) {
+                pb.redirectOutput(Context.getInstance().getRedirectStdoutFile());
+            }
+            if (Context.getInstance().getRedirectStderrFile() != null) {
+                pb.redirectError(Context.getInstance().getRedirectStderrFile());
             }
             pb.directory(new File(Context.getInstance().getCurrentPath()));
             Process p = pb.start();

@@ -11,8 +11,10 @@ public class Context {
 
     private String currentPath;
 
-    private PrintStream originalOutput = System.out;
-    private File redirectOutputFile = null;
+    private PrintStream originalStdout = System.out;
+    private PrintStream originalStderr = System.err;
+    private File redirectStdoutFile = null;
+    private File redirectStderrFile = null;
 
     public static Context getInstance() {
         if (instance == null) {
@@ -38,22 +40,38 @@ public class Context {
         return this.currentPath;
     }
 
-    public void setRedirectOutputFile(File file) {
+    public void setRedirectStdoutFile(File file) {
         try {
             System.setOut(new PrintStream(file));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        redirectOutputFile = file;
+        redirectStdoutFile = file;
     }
 
-    public File getRedirectOutputFile() {
-        return redirectOutputFile;
+    public void setRedirectStderrFile(File file) {
+        try {
+            System.setErr(new PrintStream(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        redirectStderrFile = file;
+    }
+
+    public File getRedirectStdoutFile() {
+        return redirectStdoutFile;
+    }
+
+
+    public File getRedirectStderrFile() {
+        return redirectStderrFile;
     }
 
     public void clear() {
-        System.setOut(originalOutput);
-        redirectOutputFile = null;
+        System.setOut(originalStdout);
+        System.setErr(originalStderr);
+        redirectStdoutFile = null;
+        redirectStderrFile = null;
     }
 
 }
