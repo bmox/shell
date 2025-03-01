@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 import xyz.lp.builtin.CdCommand;
@@ -65,6 +66,10 @@ public class CommandManager {
 
     public static boolean isBuiltin(String commandName) {
         return builtins.containsKey(commandName);
+    }
+
+    public static Set<String> getBuiltins() {
+        return builtins.keySet();
     }
 
     public static boolean isExecutableFile(String cmdName) {
